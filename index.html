@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<!-- saved from url=(0076)http://www.jqueryscript.net/demo/Javascript-Animated-Gauges-Plugin-JustGage/ -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Auto-adjust</title>
+    
+    <style>
+      body {
+        text-align: center;
+      }
+      
+      #g1 {
+        width:400px; height:320px;
+        display: inline-block;
+        margin: 1em;
+      }
+      
+      p {
+        display: block;
+        width: 450px;
+        margin: 2em auto;
+        text-align: left;
+      }
+    </style>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="./Auto-adjust_files/raphael.2.1.0.min.js"></script>
+    <script src="./Auto-adjust_files/justgage.1.0.1.min.js"></script>
+    <script>
+      var g1;
+      
+      window.onload = function(){
+        var g1 = new JustGage({
+          id: "g1", 
+          value: 0, 
+          min: 4.8,
+          max: 5.2,
+          title: "Arduino Voltage",
+          label: "VDC",
+		  levelColorsGradient: true,
+		  levelColors: ["FF0000","FFFF00","00FF00","FFFF00","FF0000"],
+		  shadowSize: 2,
+		  shadowVerticalOffset: 12
+        });
+        setInterval(function() {
+        	$.get('http://127.0.0.1:8080/?getData',function(data){
+        		console.log(data);
+        		data = eval(data+(Math.floor(Math.random() * 10) - 10));
+        		console.log(data);
+        		data = data/1000;
+        		g1.refresh(data);
+        	});
+        }, 200);
+      };
+    </script>
+
+	</head>
+  <body>    
+    <div id="g1"></div>
+    </body></html>
