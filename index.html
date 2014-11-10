@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <!-- saved from url=(0076)http://www.jqueryscript.net/demo/Javascript-Animated-Gauges-Plugin-JustGage/ -->
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<html>
+	<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Auto-adjust</title>
     
     <style>
@@ -21,38 +23,82 @@
         text-align: left;
       }
     </style>
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-    <script src="./Auto-adjust_files/raphael.2.1.0.min.js"></script>
-    <script src="./Auto-adjust_files/justgage.1.0.1.min.js"></script>
+    <script src="./web_files/jquery.min.js"></script>
+    <script src="./web_files/raphael.2.1.0.min.js"></script>
+    <script src="./web_files/justgage.1.0.1.min.js"></script>
+	<link href="./web_files/examples.css" rel="stylesheet" type="text/css">
+	<!--[if lte IE 8]><script language="javascript" type="text/javascript" src="./web_files/excanvas.min.js"></script><![endif]-->
+	<script language="javascript" type="text/javascript" src="./web_files/jquery.flot.min.js"></script>
     <script>
-      var g1;
-      
-      window.onload = function(){
-        var g1 = new JustGage({
-          id: "g1", 
-          value: 0, 
-          min: 4.8,
-          max: 5.2,
-          title: "Arduino Voltage",
-          label: "VDC",
+	var g1;
+	var count = 0;
+	var plot_data = [];
+	var totalPoints = 100;
+	var min = 4.8;
+	var max = 5.1;
+	
+	$(function(){
+		var plot = $.plot("#placeholder", [ plot_data ], {
+			series: {
+				shadowSize: 0	// Drawing is faster without shadows
+			},
+			yaxis: {
+				min: min,
+				max: max
+			},
+			xaxis: {
+	            show: false,
+	            min: 0,
+	            max: 30,
+	            ticks: 10,
+			}
+		});
+		
+		var g1 = new JustGage({
+		  id: "g1", 
+		  value: 0, 
+		  min: min,
+		  max: max,
+		  title: "Arduino Voltage",
+		  label: "VDC",
 		  levelColorsGradient: true,
 		  levelColors: ["FF0000","FFFF00","00FF00","FFFF00","FF0000"],
 		  shadowSize: 2,
 		  shadowVerticalOffset: 12
-        });
-        setInterval(function() {
-        	$.get('http://'+window.location.host+'/?getData',function(data){
-        		console.log(data);
-        		data = eval(data+(Math.floor(Math.random() * 10) - 10));
-        		console.log(data);
-        		data = data/1000;
-        		g1.refresh(data.toFixed(3));
-        	});
-        }, 200);
-      };
-    </script>
-
+		});
+		
+		setInterval(function() {
+			if(!$('#on_check').attr('checked'))return;
+			$.get('http://'+window.location.host+'/?getData',function(data){
+				//console.log(data);
+				//data = eval(data+(Math.floor(Math.random() * 10) - 10)); //ADD NOISE
+				//console.log(data);
+				data = data/1000;
+				data = parseFloat(data.toFixed(3));
+				
+				g1.refresh(data);//GAGE
+				
+				plot_data.push([count,data]);//PLOTTER\
+				if(count>30){
+					for (var i = 0; i < plot_data.length; ++i) {
+						plot_data[i][0] = plot_data[i][0]-1;
+					}
+				}
+				//if(plot_data.length>11)console.log(plot_data);
+				plot.setData([plot_data]);
+				plot.draw();
+				count++;
+			});
+		}, 500);
+	});
+	</script>
+	
 	</head>
-  <body>    
-    <div id="g1"></div>
-    </body></html>
+	<body>
+		<label><input type="checkbox" id="on_check" /> ON</label>
+    	<div id="g1"></div>
+    	<div class="demo-container">
+			<div id="placeholder" style="height:300px"></div>
+		</div>
+    </body>
+</html>

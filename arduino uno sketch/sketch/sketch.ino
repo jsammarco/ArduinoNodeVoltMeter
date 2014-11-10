@@ -17,5 +17,5 @@ void setup() {
 
 void loop() {
   Serial.println( readVcc() );
-  delay(250);
+  delay(500);
 }
