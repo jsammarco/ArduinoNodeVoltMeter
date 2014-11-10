@@ -41,12 +41,12 @@
 		  shadowVerticalOffset: 12
         });
         setInterval(function() {
-        	$.get('http://127.0.0.1:8080/?getData',function(data){
+        	$.get('http://'+window.location.host+'/?getData',function(data){
         		console.log(data);
         		data = eval(data+(Math.floor(Math.random() * 10) - 10));
         		console.log(data);
         		data = data/1000;
-        		g1.refresh(data);
+        		g1.refresh(data.toFixed(3));
         	});
         }, 200);
       };

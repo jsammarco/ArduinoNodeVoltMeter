@@ -31,7 +31,7 @@ http.createServer(function(request, response) {
 	, url_parts = url.parse(request.url, true)
 	, query = url_parts.query;
 	
-	console.log(query);
+	//console.log(query);
 		
 	if(typeof query.getData != 'undefined'){
 		response.writeHead(200, {"Content-Type": "text/plain"});
